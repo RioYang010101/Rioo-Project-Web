@@ -1,44 +1,50 @@
+const express = require("express");
 const fetch = require("node-fetch");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 
-module.exports = {
-  name: "Stock Grow a Garden",
-  desc: "Ambil data stok Grow a Garden (Seeds, Gears, Eggs tanpa nextRestock, dengan API key wajib)",
-  category: "Stock",
-  path: "/stock/grow",
-  async run(req, res) {
-    try {
-      // Ambil API key dari query (?apikey=...) atau header
-      const apiKey = req.query.apikey || req.headers["x-api-key"];
+const app = express();
 
-      // Cek apakah API key benar
-      if (apiKey !== "riooapi") {
-        return res.status(401).json({
-          status: false,
-          message: "API key salah atau tidak diberikan. Gunakan apikey=riooapi"
-        });
-      }
+// Serve Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-      const response = await fetch("https://suraweb.my.id/info/stockgarden");
-      const json = await response.json();
+// Endpoint
+app.get("/stock/grow", async (req, res) => {
+  try {
+    const apiKey = req.query.apikey || req.headers["x-api-key"];
 
-      // Ambil hanya items
-      const seeds = json.data?.currentStock?.Seeds?.items || [];
-      const gears = json.data?.currentStock?.Gears?.items || [];
-      const eggs = json.data?.currentStock?.Eggs?.items || [];
-
-      res.json({
-        status: true,
-        creator: "Rioo",
-        seeds,
-        gears,
-        eggs
-      });
-    } catch (err) {
-      res.status(500).json({
+    if (apiKey !== "riooapi") {
+      return res.status(401).json({
         status: false,
-        creator: "Rioo",
-        error: err.message
+        message: "API key salah atau tidak diberikan. Gunakan apikey=riooapi"
       });
     }
+
+    const response = await fetch("https://suraweb.my.id/info/stockgarden");
+    const json = await response.json();
+
+    const seeds = json.data?.currentStock?.Seeds?.items || [];
+    const gears = json.data?.currentStock?.Gears?.items || [];
+    const eggs = json.data?.currentStock?.Eggs?.items || [];
+
+    res.json({
+      status: true,
+      creator: "Rioo",
+      seeds,
+      gears,
+      eggs
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      creator: "Rioo",
+      error: err.message
+    });
   }
-};
+});
+
+// Jalankan server
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+  console.log("Swagger docs: http://localhost:3000/docs");
+});
