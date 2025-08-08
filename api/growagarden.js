@@ -2,19 +2,19 @@ const fetch = require("node-fetch");
 
 module.exports = {
   name: "Stock Grow a Garden",
-  desc: "Ambil data stok Grow a Garden (Seeds, Gears, Eggs tanpa nextRestock, dengan API key)",
+  desc: "Ambil data stok Grow a Garden (Seeds, Gears, Eggs tanpa nextRestock, dengan API key wajib)",
   category: "Stock",
   path: "/stock/grow",
   async run(req, res) {
     try {
-      // Ambil API key dari query atau header
+      // Ambil API key dari query (?apikey=...) atau header
       const apiKey = req.query.apikey || req.headers["x-api-key"];
 
-      // Validasi API key
+      // Cek apakah API key benar
       if (apiKey !== "riooapi") {
-        return res.status(403).json({
+        return res.status(401).json({
           status: false,
-          message: "Invalid API key"
+          message: "API key salah atau tidak diberikan. Gunakan apikey=riooapi"
         });
       }
 
