@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Grow a Garden Stock API",
+    "version": "1.0.0",
+    "description": "Ambil data stok Grow a Garden (Seeds, Gears, Eggs) dengan API key"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/stock/grow": {
+      "get": {
+        "summary": "Ambil data stok Grow a Garden",
+        "description": "Mengambil Seeds, Gears, dan Eggs. Wajib masukkan API key 'riooapi'.",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mengambil data"
+          },
+          "401": {
+            "description": "API key salah atau tidak diberikan"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apikey"
+      }
+    }
+  }
+}
